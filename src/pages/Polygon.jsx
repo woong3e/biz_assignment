@@ -22,7 +22,6 @@ const Polygon = () => {
     };
     //2. 지도 생성, 첫번째 인수는 container요소, 두번째 인수는 mapOptions
     mapRef.current = new naver.maps.Map("map", mapOptions);
-    //3. polygon 에제
   }, []);
 
   useEffect(() => {
@@ -31,6 +30,7 @@ const Polygon = () => {
     const finalPath = [];
     const path = where.map((el) => JSON.parse(el.polygon));
     const newPath = path[0]; //바뀌는 값?
+
     for (const key in newPath) {
       const newPath3 = Object(newPath[key]);
       const newPath4 = [newPath3[0], newPath3[1]]; //[lat,lng]
