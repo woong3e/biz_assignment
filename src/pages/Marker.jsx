@@ -1,11 +1,12 @@
 import React, { useEffect, useState, useRef } from "react";
-import { Box, Flex, Button, ButtonGroup } from "@chakra-ui/react";
+import { Flex, Button } from "@chakra-ui/react";
 const Marker = () => {
   const [flow, setFlow] = useState([]);
   const { naver } = window;
   const mapRef = useRef(null);
   const markerRef = useRef(null);
-  const [markers, setMarkers] = useState({});
+  const [markerState, setMarkerState] = useState([]);
+
   const markerColor = {
     1: "src/img/1.png",
     2: "src/img/2.png",
@@ -13,13 +14,6 @@ const Marker = () => {
     4: "src/img/4.png",
     5: "src/img/5.png",
   };
-  // const markerColor2 = {
-  //   1: "#0000ff",
-  //   2: "#00ff00",
-  //   3: "#fff200",
-  //   4: "#ff9500",
-  //   5: "#ff0000",
-  // };
 
   useEffect(() => {
     fetch("/data/flowpop.json")
@@ -40,25 +34,17 @@ const Marker = () => {
   useEffect(() => {
     if (!mapRef.current || !flow) return;
     //3. Marker
+    let markers = [];
     for (let i = 0; i < flow.length; i++) {
-      if (
-        flow[i].flowLv === 1 ||
-        flow[i].flowLv === 2 ||
-        flow[i].flowLv === 3 ||
-        flow[i].flowLv === 4
-      ) {
+      if (flow[i].flowLv !== 5) {
         continue;
       }
-      setMarkers(
+      markers.push(
         new naver.maps.Marker({
           map: mapRef.current,
           position: new naver.maps.LatLng(flow[i].yAxis, flow[i].xAxis),
           icon: {
-            // content: `<div style={width:5px;height:5px;border-radius:50%;background-color:${
-            //   markerColor2[flow[i].flowLv]
-            // }}></div>`,
             url: markerColor[flow[i].flowLv],
-            // url: `src/img/${flow[i].flowLv}.png`,
             size: new naver.maps.Size(5, 5),
             origin: new naver.maps.Point(0, 0),
             anchor: new naver.maps.Point(11, 35),
@@ -66,50 +52,78 @@ const Marker = () => {
         })
       );
     }
+    setMarkerState(markers);
   }, [flow, mapRef]);
-  const handleClickButton = () => {
-    for (let i = 0; i < flow.length; i++) {
-      if (
-        flow[i].flowLv === 1 ||
-        flow[i].flowLv === 2 ||
-        flow[i].flowLv === 3 ||
-        flow[i].flowLv === 5
-      ) {
-        continue;
+
+  useEffect(() => {
+    //5. idle 이벤트
+    naver.maps.Event.addListener(mapRef.current, "idle", function () {
+      updateMarkers(mapRef.current, markerState); //줌하거나 패닝시 이벤트동작
+    });
+  }, [markerState]);
+
+  const showMarker = (map, marker) => {
+    if (marker.getMap()) return;
+    marker.setMap(map);
+  };
+
+  const hideMarker = (map, marker) => {
+    if (!marker.getMap()) return;
+    marker.setMap(null);
+  };
+
+  const updateMarkers = (map, markerState) => {
+    const mapBounds = map.getBounds();
+    let marker;
+    let position;
+
+    for (let i = 0; i < markerState.length; i++) {
+      marker = markerState[i];
+      position = marker.getPosition();
+
+      if (mapBounds.hasLatLng(position)) {
+        showMarker(map, marker);
+      } else {
+        hideMarker(map, marker);
       }
-      setMarkers(
-        new naver.maps.Marker({
-          map: mapRef.current,
-          position: new naver.maps.LatLng(flow[i].yAxis, flow[i].xAxis),
-          icon: {
-            // content: `<div style={width:5px;height:5px;border-radius:50%;background-color:${
-            //   markerColor2[flow[i].flowLv]
-            // }}></div>`,
-            url: markerColor[flow[i].flowLv],
-            // url: `src/img/${flow[i].flowLv}.png`,
-            size: new naver.maps.Size(5, 5),
-            origin: new naver.maps.Point(0, 0),
-            anchor: new naver.maps.Point(11, 35),
-          },
-        })
-      );
     }
   };
-  const handleClickButton2 = () => {
+
+  //버튼 필터링
+  const handleClickButton = () => {
+    let markers = [];
+    for (let i = 0; i < flow.length; i++) {
+      if (flow[i].flowLv !== 4) {
+        continue;
+      }
+
+      markers.push(
+        new naver.maps.Marker({
+          map: mapRef.current,
+          position: new naver.maps.LatLng(flow[i].yAxis, flow[i].xAxis),
+          icon: {
+            url: markerColor[flow[i].flowLv],
+            size: new naver.maps.Size(5, 5),
+            origin: new naver.maps.Point(0, 0),
+            anchor: new naver.maps.Point(11, 35),
+          },
+        })
+      );
+    }
+    setMarkerState(markers);
+  };
+  const handleClickButton123 = () => {
+    let markers = [];
     for (let i = 0; i < flow.length; i++) {
       if (flow[i].flowLv === 4 || flow[i].flowLv === 5) {
         continue;
       }
-      setMarkers(
+      markers.push(
         new naver.maps.Marker({
           map: mapRef.current,
           position: new naver.maps.LatLng(flow[i].yAxis, flow[i].xAxis),
           icon: {
-            // content: `<div style={width:5px;height:5px;border-radius:50%;background-color:${
-            //   markerColor2[flow[i].flowLv]
-            // }}></div>`,
             url: markerColor[flow[i].flowLv],
-            // url: `src/img/${flow[i].flowLv}.png`,
             size: new naver.maps.Size(5, 5),
             origin: new naver.maps.Point(0, 0),
             anchor: new naver.maps.Point(11, 35),
@@ -117,31 +131,41 @@ const Marker = () => {
         })
       );
     }
+    setMarkerState(markers);
   };
-  console.log(Array.isArray(markers));
+  //4. 현재 화면에 보이는 경계 가져오기
+  // const bounds = mapRef.current.getBounds();
+  // const southWest = bounds.getSW();
+  // const northEast = bounds.getNE();
+  // const lngSpan = northEast.lng() - southWest.lng();
+  // const latSpan = northEast.lat() - southWest.lat();
+  // console.log(southWest);
+  // console.log(northEast);
+  // console.log(bounds);
+  // console.log(markerState);
   return (
-    <div>
-      <Flex id="map" w="100%" h="100vh" justify="center" align="center">
-        <Button
-          zIndex={10}
-          position="absolute"
-          top={0}
-          right={0}
-          onClick={handleClickButton}
-        >
-          4 추가
-        </Button>
-        <Button
-          zIndex={10}
-          position="absolute"
-          top={10}
-          right={0}
-          onClick={handleClickButton2}
-        >
-          1,2,3 추가
-        </Button>
-      </Flex>
-    </div>
+    <Flex id="map" w="100%" h="100vh" justify="center" align="center">
+      <Button
+        zIndex={10}
+        position="absolute"
+        top={0}
+        right={0}
+        onClick={handleClickButton}
+      >
+        4 추가
+      </Button>
+      <Button
+        zIndex={10}
+        position="absolute"
+        top={10}
+        right={0}
+        onClick={() => {
+          handleClickButton123();
+        }}
+      >
+        1,2,3 추가
+      </Button>
+    </Flex>
   );
 };
 
