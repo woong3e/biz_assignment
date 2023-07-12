@@ -133,16 +133,6 @@ const Marker = () => {
     }
     setMarkerState(markers);
   };
-  //4. 현재 화면에 보이는 경계 가져오기
-  // const bounds = mapRef.current.getBounds();
-  // const southWest = bounds.getSW();
-  // const northEast = bounds.getNE();
-  // const lngSpan = northEast.lng() - southWest.lng();
-  // const latSpan = northEast.lat() - southWest.lat();
-  // console.log(southWest);
-  // console.log(northEast);
-  // console.log(bounds);
-  // console.log(markerState);
   return (
     <Flex id="map" w="100%" h="100vh" justify="center" align="center">
       <Button
