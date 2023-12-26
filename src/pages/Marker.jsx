@@ -8,11 +8,11 @@ const Marker = () => {
   const [markerState, setMarkerState] = useState([]);
 
   const markerColor = {
-    1: "src/img/a.png",
-    2: "src/img/b.png",
-    3: "src/img/c.png",
-    4: "src/img/d.png",
-    5: "src/img/e.png",
+    1: "https://github.com/woong3e/biz_assignment/blob/master/src/images/a.png",
+    2: "https://github.com/woong3e/biz_assignment/blob/master/src/images/b.png",
+    3: "https://github.com/woong3e/biz_assignment/blob/master/src/images/c.png",
+    4: "https://github.com/woong3e/biz_assignment/blob/master/src/images/d.png",
+    5: "https://github.com/woong3e/biz_assignment/blob/master/src/images/e.png",
   };
 
   useEffect(() => {
