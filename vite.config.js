@@ -6,7 +6,11 @@ export default defineConfig({
   plugins: [react()],
   server: {
     proxy: {
-      "/polygon": "https://biz-assignment.vercel.app",
+      "/polygon": {
+        target: "https://biz-assignment.vercel.app",
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/polygon/, ""),
+      },
     },
   },
 });
