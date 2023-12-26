@@ -1,4 +1,3 @@
-import React from "react";
 import { useState, useEffect, useRef } from "react";
 import { Flex } from "@chakra-ui/react";
 
@@ -30,7 +29,6 @@ const Polygon = () => {
     const finalPath = [];
     const path = where.map((el) => JSON.parse(el.polygon));
     const newPath = path[0]; //바뀌는 값?
-
     for (const key in newPath) {
       const newPath3 = Object(newPath[key]);
       const newPath4 = [newPath3[0], newPath3[1]]; //[lat,lng]
@@ -51,7 +49,7 @@ const Polygon = () => {
 
   return (
     <div>
-      <Flex id="map" w="100%" h="80vh" justify="center" align="center" />
+      <Flex id="map" w="100%" h="100vh" justify="center" align="center" />
       <Flex align="center" justify="center">
         모든 인류 구성원의 천부
       </Flex>
